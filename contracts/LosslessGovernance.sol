@@ -541,6 +541,22 @@ contract LosslessGovernance is ILssGovernance, Initializable, AccessControlUpgra
 
     }
 
+    /// @notice This lets an erroneously reported smart contracts to retrieve compensation(Only Contracts can retrieve compensation)
+    function retrieveCompensationForContract() override public whenNotPaused {
+        require(isContract(msg.sender), "LSS: Only Contract");
+        require(!compensation[msg.sender].payed, "LSS: Already retrieved");
+        require(compensation[msg.sender].amount > 0, "LSS: No retribution assigned");
+        
+        compensation[msg.sender].payed = true;
+
+        losslessReporting.retrieveCompensation(msg.sender, compensation[msg.sender].amount);
+
+        emit CompensationRetrieval(msg.sender, compensation[msg.sender].amount);
+
+        compensation[msg.sender].amount = 0;
+
+    }
+
     ///@notice This function verifies is an address belongs to a contract
     ///@param _addr address to verify
     function isContract(address _addr) private view returns (bool){

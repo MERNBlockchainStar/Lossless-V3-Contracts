@@ -147,6 +147,10 @@ const setupEnvironment = async (
     'LosslessReporting',
   );
 
+  const LosslessTesting = await ethers.getContractFactory(
+    'LosslessTesting'
+  )
+
   lssReporting = await upgrades.deployProxy(
     LosslessReporting,
     [lssController.address],
@@ -166,6 +170,14 @@ const setupEnvironment = async (
       lssController.address,
       lssStaking.address,
       604800, // 7 days
+    ],
+    { initializer: 'initialize' },
+  );
+
+  lssTesting = await upgrades.deployProxy(
+    LosslessTesting,
+    [
+      lssGovernance.address,
     ],
     { initializer: 'initialize' },
   );
@@ -214,6 +226,7 @@ const setupEnvironment = async (
     lssStaking,
     lssReporting,
     lssGovernance,
+    lssTesting,
     lssTeamVoteIndex,
     tokenOwnersVoteIndex,
     committeeVoteIndex,
